@@ -14,14 +14,19 @@
     let vm = new Vue({
       el: '#app',
       data() {
-        return { a: 1, a: { a: 1 } };
+        return { a: [{ a: 1 }] };
       },
     });
 
     // console.log(vm.$options,'实例属性');
     // console.log(vm._data.city.name); 触发两次get递归两次 性能比较差，vue3使用proxy
 
-    vm._data.a = {b:1}
-    vm._data.a.b = 100
+    // vm._data.a = { b: 1 };
+    // vm._data.a.b = 100;
+    // 开发功能很少对索引进行操作，为了性能考虑 不对数据进行拦截
+    // 拦截数据可以改变数组的方法进行操作，当调用这些方法的时候，再通知数据，发生变化了，对原始的方法进行重写
+    // console.log(vm._data.a.push(456));
+    // console.log(vm._data.a);
+    vm._data.a[0].a = 100;
   </script>
 </html>
