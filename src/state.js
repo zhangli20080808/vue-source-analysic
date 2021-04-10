@@ -26,8 +26,8 @@ function initProps(vm) {}
 function initMethods(vm) {}
 function initData(vm) {
   let data = vm.$options.data;
-  // data 有可能是函数 有可能是对象
-  data = typeof data === 'function' ? data.call(vm) : data;
+  // data 有可能是函数 有可能是对象 _data 代理当前函数的返回值
+  vm._data = data = typeof data === 'function' ? data.call(vm) : data;
   observe(data);
 }
 function initComputed(vm) {}
