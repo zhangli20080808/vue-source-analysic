@@ -1,0 +1,1 @@
+{"version":3,"file":"vue.js","sources":["../../src/index.js"],"sourcesContent":["export const fn = () =>{  // 会将fn 挂载到 Vue.fn\n\n}"],"names":["fn"],"mappings":";;;;;;OAAaA,EAAE,GAAG,MAAK;CAEtB;;;;;;;;;;"}
