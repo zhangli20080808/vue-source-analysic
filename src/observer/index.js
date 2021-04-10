@@ -5,6 +5,7 @@
  */
 
 import { arrayMethods } from './array';
+import { defineProperty } from '../util';
 
 class Observer {
   constructor(value) {
@@ -12,12 +13,7 @@ class Observer {
 
     // 判断一个对象有没有被观测过，看他与没有ob属性
     // 不可枚举的好处 就是我们 walk循环的时候是不能取到这个属性的
-    Object.defineProperty(value, '__ob__', {
-      enumerable: false, // 表示不能被循环出来
-      configurable: false,
-      value: this,
-    });
-
+    defineProperty(value, '__ob__');
     // 我们希望 调用 push pop shift unshift sort reserve slice 的时候再通知数组 再去调原有的方法
     // 函数劫持、切片编程 先去调自己的方法，如果自己方法没有，会找原型上的方法，如果自己有，再调原有的方法(切片、高阶函数)
     if (Array.isArray(value)) {
@@ -31,7 +27,7 @@ class Observer {
   walk(data) {
     let keys = Object.keys(data);
     keys.forEach((key) => {
-      defineRective(data, key, data[key]); // vue.util.defineRective
+      defineReactive(data, key, data[key]); // vue.util.defineReactive
     });
   }
 
@@ -43,7 +39,7 @@ class Observer {
   }
 }
 
-function defineRective(data, key, value) {
+function defineReactive(data, key, value) {
   observe(value); // 如果值是对象类型，深度观测
   Object.defineProperty(data, key, {
     get() {

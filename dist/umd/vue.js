@@ -42,6 +42,28 @@
     };
   });
 
+  function proxy(vm, data, key) {
+    // vm.a
+    Object.defineProperty(vm, key, {
+      get() {
+        return vm[data][key]; //vm._data.a
+      },
+
+      set(newValue) {
+        vm[data][key] = newValue;
+      }
+
+    });
+  }
+  function defineProperty(target, key, value) {
+    Object.defineProperty(target, key, {
+      enumerable: false,
+      // 表示不能被循环出来
+      configurable: false,
+      value
+    });
+  }
+
   /**
    * 处理响应式数据
    * 针对观测的对象 我们创建一个观测类去观测我们的data，因为有可能是观测对象 数组 其他的一些方法，将
@@ -53,12 +75,7 @@
       // 使用 defineProperty 重新定义属性
       // 判断一个对象有没有被观测过，看他与没有ob属性
       // 不可枚举的好处 就是我们 walk循环的时候是不能取到这个属性的
-      Object.defineProperty(value, '__ob__', {
-        enumerable: false,
-        // 表示不能被循环出来
-        configurable: false,
-        value: this
-      }); // 我们希望 调用 push pop shift unshift sort reserve slice 的时候再通知数组 再去调原有的方法
+      defineProperty(value, '__ob__'); // 我们希望 调用 push pop shift unshift sort reserve slice 的时候再通知数组 再去调原有的方法
       // 函数劫持、切片编程 先去调自己的方法，如果自己方法没有，会找原型上的方法，如果自己有，再调原有的方法(切片、高阶函数)
 
       if (Array.isArray(value)) {
@@ -73,7 +90,7 @@
     walk(data) {
       let keys = Object.keys(data);
       keys.forEach(key => {
-        defineRective(data, key, data[key]); // vue.util.defineRective
+        defineReactive(data, key, data[key]); // vue.util.defineReactive
       });
     } //对数组每一项执行响应化
 
@@ -86,7 +103,7 @@
 
   }
 
-  function defineRective(data, key, value) {
+  function defineReactive(data, key, value) {
     observe(value); // 如果值是对象类型，深度观测
 
     Object.defineProperty(data, key, {
@@ -141,7 +158,13 @@
   function initData(vm) {
     let data = vm.$options.data; // data 有可能是函数 有可能是对象 _data 代理当前函数的返回值
 
-    vm._data = data = typeof data === 'function' ? data.call(vm) : data;
+    vm._data = data = typeof data === 'function' ? data.call(vm) : data; // 属性代理
+
+    for (let key in data) {
+      // 我们取key值的时候，从vm._data中去取
+      proxy(vm, '_data', key);
+    }
+
     observe(data);
   }
 
