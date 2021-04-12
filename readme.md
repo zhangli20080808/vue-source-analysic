@@ -31,3 +31,12 @@
 # 5.vue 实现属性代理
 
 为了方便取值，将 vm.\_\_data.arr 的取值方式转变为 vm.arr 的方式
+
+# 6.html 编译成 ast 语法树
+
+## 渲染操作
+
+1.  默认会先找 render 方法
+2.  默认没有传入 render 方法，会查找 template
+3.  都没有，找当前 el 指定的内容，来进行渲染
+## ast解析template，最终变成render函数，保持逻辑一致  
